@@ -16,12 +16,12 @@
 #
 
 name "redis"
-version "2.4.7"
+version "2.6.13"
 
-source :url => "http://redis.googlecode.com/files/redis-2.4.7.tar.gz",
-       :md5 => "6afffb6120724183e40f1cac324ac71c"
+source :url => "http://redis.googlecode.com/files/redis-#{version}.tar.gz",
+       :md5 => "c4be422013905c64af18b1ef140de21f"
 
-relative_path "redis-2.4.7"
+relative_path "redis-#{version}"
 
 make_args = ["PREFIX=#{install_dir}/embedded",
              "CFLAGS='-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include'",
