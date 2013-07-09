@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,11 @@
 # limitations under the License.
 #
 
-name "gdbm"
-version "1.9.1"
+name "pygments"
+version "1.6"
 
-dependency "libgcc"
-
-source :url => "http://ftp.gnu.org/gnu/gdbm/gdbm-1.9.1.tar.gz",
-       :md5 => "59f6e4c4193cb875964ffbe8aa384b58"
-
-relative_path "gdbm-1.9.1"
+dependency "pip"
 
 build do
-  configure_command = ["./configure",
-                       "--prefix=#{install_dir}/embedded"]
-
-  if platform == "freebsd"
-    configure_command << "--with-pic"
-  end
-
-  command configure_command.join(" ")
-  command "make -j #{max_build_jobs}"
-  command "make install"
+  command "#{install_dir}/embedded/bin/pip install -I #{name}==#{version}"
 end

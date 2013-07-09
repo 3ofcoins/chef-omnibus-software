@@ -29,7 +29,7 @@ relative_path "ngx_openresty-#{version}"
 
 build do
   env = {
-    "LDFLAGS" => "-R#{install_dir}/embedded/lib -L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
+    "LDFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
     "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
     "LD_RUN_PATH" => "#{install_dir}/embedded/lib"
   }
@@ -40,6 +40,7 @@ build do
            "--conf-path=#{install_dir}/embedded/conf/nginx.conf",
            "--with-http_ssl_module",
            "--with-debug",
+           "--with-http_stub_status_module",
            # Building Nginx with non-system OpenSSL
            # http://www.ruby-forum.com/topic/207287#902308
            "--with-ld-opt=\"-L#{install_dir}/embedded/lib -Wl,-rpath,#{install_dir}/embedded/lib -lssl -lcrypto -ldl -lz\"",
