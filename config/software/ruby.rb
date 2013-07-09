@@ -16,7 +16,7 @@
 #
 
 name "ruby"
-version "1.9.3-p286"
+version "1.9.3-p448"
 
 dependency "zlib"
 dependency "ncurses"
@@ -24,11 +24,11 @@ dependency "libedit"
 dependency "openssl"
 dependency "libyaml"
 dependency "libiconv"
-dependency "gdbm" if (platform == "mac_os_x" or platform == "freebsd")
+dependency "gdbm" if (platform == "mac_os_x" or platform == "freebsd" or platform == "aix")
 dependency "libgcc" if (platform == "solaris2" and Omnibus.config.solaris_compiler == "gcc")
 
 source :url => "http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-#{version}.tar.gz",
-       :md5 => 'e2469b55c2a3d0d643097d47fe4984bb'
+       :md5 => 'a893cff26bcf351b8975ebf2a63b1023'
 
 relative_path "ruby-#{version}"
 
@@ -54,6 +54,32 @@ env =
     else
       raise "Sorry, #{Omnibus.config.solaris_compiler} is not a valid compiler selection."
     end
+  when "aix"
+    {
+      # see http://www.ibm.com/developerworks/aix/library/au-gnu.html
+      #
+      # specifically:
+      #
+      # "To use AIX run-time linking, you should create the shared object
+      # using gcc -shared -Wl,-G and create executables using the library
+      # by adding the -Wl,-brtl option to the link line. Technically, you
+      # can leave off the -shared option, but it does no harm and reduces
+      # confusion."
+      #
+      # AIX also uses -Wl,-blibpath instead of -R or LD_RUN_PATH, but the
+      # option is not additive, so requires /usr/lib and /lib as well (there
+      # is another compiler option to allow ld to take an -R flag in addition
+      # to turning on -brtl, but it had other side effects I couldn't fix).
+      #
+      # -O2 optimized away some configure test which caused ext libs to fail
+      #
+      # We also need prezl's M4 instead of picking up /usr/bin/m4 which
+      # barfs on ruby.
+      #
+      "CFLAGS" => "-I#{install_dir}/embedded/include -O",
+      "LDFLAGS" => "-L#{install_dir}/embedded/lib -Wl,-brtl -Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib",
+      "M4" => "/opt/freeware/bin/m4"
+    }
   else
     {
       "CFLAGS" => "-I#{install_dir}/embedded/include -O3 -g -pipe",
@@ -64,16 +90,20 @@ env =
 build do
   configure_command = ["./configure",
                        "--prefix=#{install_dir}/embedded",
-                       "--with-opt-dir=#{install_dir}/embedded",
                        "--with-out-ext=fiddle",
                        "--enable-shared",
                        "--enable-libedit",
                        "--with-ext=psych",
                        "--disable-install-doc"]
 
-  if platform == "freebsd"
+  case platform
+  when "aix"
+    patch :source => "ruby-aix-configure.patch", :plevel => 1
+    # --with-opt-dir causes ruby to send bogus commands to the AIX linker
+  when "freebsd"
     configure_command << "--without-execinfo"
-  elsif platform == "smartos"
+    configure_command << "--with-opt-dir=#{install_dir}/embedded"
+  when "smartos"
     # Opscode patch - someara@opscode.com
     # GCC 4.7.0 chokes on mismatched function types between OpenSSL 1.0.1c and Ruby 1.9.3-p286
     patch :source => "ruby-openssl-1.0.1c.patch", :plevel => 1
@@ -87,9 +117,33 @@ build do
     # From RVM forum
     # https://github.com/wayneeseguin/rvm/commit/86766534fcc26f4582f23842a4d3789707ce6b96
     configure_command << "ac_cv_func_dl_iterate_phdr=no"
+    configure_command << "--with-opt-dir=#{install_dir}/embedded"
+  else
+    configure_command << "--with-opt-dir=#{install_dir}/embedded"
   end
 
+  # this works around a problem that appears to be identical to the ruby bug:
+  #   https://bugs.ruby-lang.org/issues/7217
+  # however as the patch was merged into 1.9.3-p429 it appears that there was a regression or
+  # it was not fixed for very old make's or something...
+  build_jobs = if ( (OHAI['platform_family'] == "rhel" && OHAI['platform_version'].to_f < 6) ||
+                   OHAI['platform'] == "mac_os_x" ||
+                   OHAI['platform'] == "solaris2"
+                  )
+                 1
+               else
+                 max_build_jobs
+               end
+
+  # @todo expose bundle_bust() in the DSL
+  env.merge!({
+    "RUBYOPT"         => nil,
+    "BUNDLE_BIN_PATH" => nil,
+    "BUNDLE_GEMFILE"  => nil,
+    "GEM_PATH"        => nil,
+    "GEM_HOME"        => nil
+  })
   command configure_command.join(" "), :env => env
-  command "make -j #{max_build_jobs}", :env => env
+  command "make -j #{build_jobs}", :env => env
   command "make install", :env => env
 end

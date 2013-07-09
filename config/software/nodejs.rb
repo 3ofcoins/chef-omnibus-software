@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,23 @@
 # limitations under the License.
 #
 
-name "gdbm"
-version "1.9.1"
+name "nodejs"
+version "0.10.10"
 
-dependency "libgcc"
+source :url => "http://nodejs.org/dist/v#{version}/node-v#{version}.tar.gz",
+       :md5 => "a47a9141567dd591eec486db05b09e1c"
 
-source :url => "http://ftp.gnu.org/gnu/gdbm/gdbm-1.9.1.tar.gz",
-       :md5 => "59f6e4c4193cb875964ffbe8aa384b58"
+relative_path "node-v#{version}"
 
-relative_path "gdbm-1.9.1"
+# Ensure we run with Python 2.6 on Redhats < 6
+if OHAI['platform_family'] == "rhel" && OHAI['platform_version'].to_f < 6
+  python = 'python26'
+else
+  python = 'python'
+end
 
 build do
-  configure_command = ["./configure",
-                       "--prefix=#{install_dir}/embedded"]
-
-  if platform == "freebsd"
-    configure_command << "--with-pic"
-  end
-
-  command configure_command.join(" ")
+  command "#{python} ./configure --prefix=#{install_dir}/embedded"
   command "make -j #{max_build_jobs}"
   command "make install"
 end

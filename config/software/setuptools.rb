@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2013 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,16 @@
 # limitations under the License.
 #
 
-name "gdbm"
-version "1.9.1"
+name "setuptools"
+version "0.7.7"
 
-dependency "libgcc"
+dependency "python"
 
-source :url => "http://ftp.gnu.org/gnu/gdbm/gdbm-1.9.1.tar.gz",
-       :md5 => "59f6e4c4193cb875964ffbe8aa384b58"
+source :url => "https://pypi.python.org/packages/source/s/setuptools/setuptools-#{version}.tar.gz",
+       :md5 => '0d7bc0e1a34b70a97e706ef74aa7f37f'
 
-relative_path "gdbm-1.9.1"
+relative_path "setuptools-#{version}"
 
 build do
-  configure_command = ["./configure",
-                       "--prefix=#{install_dir}/embedded"]
-
-  if platform == "freebsd"
-    configure_command << "--with-pic"
-  end
-
-  command configure_command.join(" ")
-  command "make -j #{max_build_jobs}"
-  command "make install"
+  command "#{install_dir}/embedded/bin/python setup.py install --prefix=#{install_dir}/embedded"
 end
