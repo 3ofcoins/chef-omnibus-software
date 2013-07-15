@@ -16,15 +16,15 @@
 #
 
 name "rubygems"
-version "1.8.24"
+version "2.0.3"
 
 dependency "ruby"
 
 source :url => "http://production.cf.rubygems.org/rubygems/rubygems-#{version}.tgz",
-       :md5 => "3a555b9d579f6a1a1e110628f5110c6b"
+       :md5 => "854691f145cea98b4100e5b0831b73ed"
 
 relative_path "rubygems-#{version}"
 
 build do
-  ruby "setup.rb"
+  ruby "setup.rb --no-rdoc --no-ri", env: { 'LC_ALL' => 'en_US.UTF-8' }
 end
