@@ -16,7 +16,7 @@
 #
 
 name "nokogiri"
-version "1.5.4"
+version "1.6.0"
 
 dependencies ["ruby", "rubygems", "libxml2", "libxslt", "libiconv"]
 
@@ -30,5 +30,6 @@ build do
        "--with-xslt-lib=#{install_dir}/embedded/lib",
        "--with-xslt-include=#{install_dir}/embedded/include/libxslt",
        "--with-iconv-include=#{install_dir}/embedded/include",
-       "--with-iconv-lib=#{install_dir}/embedded/lib"].join(" ")
+       "--with-iconv-lib=#{install_dir}/embedded/lib"].join(" "),
+      :env => { 'NOKOGIRI_USE_SYSTEM_LIBRARIES' => '1' }
 end
