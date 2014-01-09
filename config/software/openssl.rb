@@ -37,6 +37,8 @@ end
 relative_path "openssl-#{version}"
 
 build do
+  patch :source => "openssl-1.0.1e-do-not-build-docs.patch"
+
   env = case platform
         when "mac_os_x"
           {
@@ -45,11 +47,16 @@ build do
           }
         when "aix"
         {
-            "LDFLAGS" => "-bsvr4 -Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib -L#{install_dir}/embedded/lib",
-            "CFLAGS" => "-I#{install_dir}/embedded/include",
+            "CC" => "xlc -q64",
+            "CXX" => "xlC -q64",
+            "LD" => "ld -b64",
+            "CFLAGS" => "-q64 -I#{install_dir}/embedded/include -O",
+            "CXXFLAGS" => "-q64 -I#{install_dir}/embedded/include -O",
+            "LDFLAGS" => "-q64 -L#{install_dir}/embedded/lib -Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib",
+            "OBJECT_MODE" => "64",
             "AR" => "/usr/bin/ar",
-            "CC" => "xlc",
-            "CXX" => "xlC"
+            "ARFLAGS" => "-X64 cru",
+            "M4" => "/opt/freeware/bin/m4",
         }
         when "solaris2"
           {
@@ -78,12 +85,11 @@ build do
   configure_command = case platform
                       when "aix"
                         ["perl", "./Configure",
-                         "aix-cc",
+                         "aix64-cc",
                          common_args,
                         "-L#{install_dir}/embedded/lib",
                         "-I#{install_dir}/embedded/include",
-                        "-Wl,-bsvr4",
-                        "-Wl,-R#{install_dir}/embedded/lib"].join(" ")
+                        "-Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib"].join(" ")
                       when "mac_os_x"
                         ["./Configure",
                          "darwin64-x86_64-cc",
@@ -141,7 +147,8 @@ build do
   end
 
   command configure_command, :env => env
-  # make -jN is busted on openssl (http://comments.gmane.org/gmane.comp.encryption.openssl.devel/22800)
-  command "#{make_binary} -j 1", :env => env
+  command "#{make_binary} depend", :env => env
+  # make -j N on openssl is not reliable
+  command "#{make_binary}", :env => env
   command "#{make_binary} install", :env => env
 end

@@ -5,9 +5,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,10 @@
 #
 
 name "redis"
-version "2.6.13"
+version "2.8.2"
 
-source :url => "http://redis.googlecode.com/files/redis-#{version}.tar.gz",
-       :md5 => "c4be422013905c64af18b1ef140de21f"
+source :url => "http://download.redis.io/releases/redis-#{version}.tar.gz",
+       :md5 => "ee527b0c37e1e2cbceb497f5f6b8112b"
 
 relative_path "redis-#{version}"
 

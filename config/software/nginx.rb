@@ -16,20 +16,21 @@
 #
 
 name "nginx"
-version "1.2.3"
+version "1.4.4"
 
 dependency "pcre"
 
-source :url => "http://nginx.org/download/nginx-1.2.3.tar.gz",
-       :md5 => "0a986e60826d9e3b453dbefc36bf8f6c"
+source :url => "http://nginx.org/download/nginx-#{version}.tar.gz",
+       :md5 => "5dfaba1cbeae9087f3949860a02caa9f"
 
-relative_path "nginx-1.2.3"
+relative_path "nginx-#{version}"
 
 build do
   command ["./configure",
            "--prefix=#{install_dir}/embedded",
            "--with-http_ssl_module",
            "--with-http_stub_status_module",
+           "--with-ipv6",
            "--with-debug",
            "--with-ld-opt=-L#{install_dir}/embedded/lib",
            "--with-cc-opt=\"-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include\""].join(" ")
