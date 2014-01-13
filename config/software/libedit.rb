@@ -29,8 +29,15 @@ relative_path "libedit-20120601-3.0"
 env = case platform
       when "aix"
         {
-          "LDFLAGS" => "-Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib -L#{install_dir}/embedded/lib",
-          "CFLAGS" => "-I#{install_dir}/embedded/include"
+          "CC" => "xlc -q64",
+          "CXX" => "xlC -q64",
+          "LD" => "ld -b64",
+          "CFLAGS" => "-q64 -I#{install_dir}/embedded/include -O",
+          "CXXFLAGS" => "-q64 -I#{install_dir}/embedded/include -O",
+          "OBJECT_MODE" => "64",
+          "ARFLAGS" => "-X64 cru",
+          "M4" => "/opt/freeware/bin/m4",
+          "LDFLAGS" => "-q64 -L#{install_dir}/embedded/lib -Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib",
         }
       else
         {
@@ -50,6 +57,6 @@ build do
   command ["./configure",
            "--prefix=#{install_dir}/embedded"
            ].join(" "), :env => env
-  command "make", :env => env
-  command "make install"
+  command "make -j #{max_build_jobs}", :env => env
+  command "make -j #{max_build_jobs} install"
 end
