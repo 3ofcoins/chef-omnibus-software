@@ -53,7 +53,7 @@ env =
   end
 
 build do
-  command "./configure --prefix=#{install_dir}/embedded --disable-iconv", :env => env
+  command "./configure --prefix=#{install_dir}/embedded --disable-iconv --disable-acl-support", :env => env
   command "make -j #{max_build_jobs}", :env => env
   command "make install"
 end
