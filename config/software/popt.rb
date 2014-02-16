@@ -44,7 +44,7 @@ env =
   else
     {
       "LDFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-      "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include -static-libgcc",
+    "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include#{' -static-libgcc' unless OHAI['platform'] == 'mac_os_x' && OHAI['platform_version'].to_f > 10.7}",
       "LD_RUN_PATH" => "#{install_dir}/embedded/lib"
     }
   end
