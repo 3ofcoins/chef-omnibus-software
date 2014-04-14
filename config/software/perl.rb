@@ -1,5 +1,5 @@
 name "perl"
-version "5.18.1"
+default_version "5.18.1"
 
 source :url => "http://www.cpan.org/src/5.0/perl-#{version}.tar.gz",
        :md5 => "304cb5bd18e48c44edd6053337d3386d"
@@ -18,7 +18,8 @@ build do
             "-de",
             "-Dprefix=#{install_dir}/embedded",
             "-Duseshrplib", ## Compile shared libperl
-            "-Dusethreads" ## Compile ithread support
+            "-Dusethreads", ## Compile ithread support
+            "-Dnoextensions='DB_File GDBM_File NDBM_File ODBM_File'"
            ].join(" "), :env => env
   command "make -j #{max_build_jobs}"
   command "make install", :env => env

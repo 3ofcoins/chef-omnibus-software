@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 #
 
 name "runit"
-version "2.1.1"
+default_version "2.1.1"
 
 source :url => "http://smarden.org/runit/runit-2.1.1.tar.gz",
        :md5 => "8fa53ea8f71d88da9503f62793336bc3"
@@ -55,7 +55,7 @@ build do
       file.print <<-EOH
 #!/bin/bash
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,9 +106,13 @@ runsvdir -P #{install_path}/service 'log: ......................................
   command "chmod 755 #{install_dir}/embedded/bin/runsvdir-start"
 
   # set up service directories
-  ["#{install_dir}/service",
-   "#{install_dir}/sv",
-   "#{install_dir}/init"].each do |dir|
-    command "mkdir -p #{dir}"
+  block do
+    ["#{install_dir}/service",
+     "#{install_dir}/sv",
+     "#{install_dir}/init"].each do |dir|
+      FileUtils.mkdir_p(dir)
+      # make sure cached builds include this dir
+      FileUtils.touch(File.join(dir, '.gitkeep'))
+    end
   end
 end

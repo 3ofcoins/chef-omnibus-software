@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 #
 
 name "curl"
-version "7.23.1"
+default_version "7.36.0"
 
 dependency "zlib"
 dependency "openssl"
 
-source :url => "http://curl.haxx.se/download/curl-7.23.1.tar.gz",
-       :md5 => "8e23151f569fb54afef093ac0695077d"
+source :url => "http://curl.haxx.se/download/curl-#{version}.tar.gz",
+       :md5 => "643a7030b27449e76413d501d4b8eb57"
 
-relative_path 'curl-7.23.1'
+relative_path "curl-#{version}"
 
 build do
   command ["./configure",
@@ -38,6 +38,8 @@ build do
            "--disable-dependency-tracking",
            "--enable-ipv6",
            "--without-libidn",
+           "--without-gnutls",
+           "--without-librtmp",
            "--with-ssl=#{install_dir}/embedded",
            "--with-zlib=#{install_dir}/embedded"].join(" ")
 

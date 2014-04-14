@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,32 @@
 #
 
 name "berkshelf"
-version "2.0.12"
+default_version "master"
 
-dependency "ruby"
-dependency "rubygems"
+source :git => "git://github.com/berkshelf/berkshelf"
+
+relative_path "berkshelf"
+
+if platform == 'windows'
+  dependency "ruby-windows"
+  dependency "ruby-windows-devkit"
+else
+  dependency "libffi"
+  dependency "ruby"
+  dependency "rubygems"
+end
 dependency "nokogiri"
+dependency "libarchive"
+
+# NOTE: Berkshelf is integrating the 'dep-selector' gem, which requires gecode
+# ~> 3.5. Gecode 4.x is available, but 'dep-selector' is not compatible with
+# that. Therefore berkshelf needs gecode 3.x until dep-selector is updated.
+dependency "gecode"
+dependency "bundler"
 
 build do
-  gem "install #{name} --no-rdoc --no-ri -v #{version}"
+  bundle "install --without guard", :env => {"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
+  bundle "exec thor gem:build", :env => {"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
+  gem ["install pkg/berkshelf-*.gem",
+       "--no-rdoc --no-ri"].join(" "), :env => {"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
 end

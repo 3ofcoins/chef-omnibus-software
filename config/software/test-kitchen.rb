@@ -15,12 +15,23 @@
 # limitations under the License.
 #
 
-name "chef-gem"
-default_version "11.10.4"
+name "test-kitchen"
+default_version "master"
+relative_path "test-kitchen"
 
-dependency "ruby"
-dependency "rubygems"
+source :git => "git://github.com/test-kitchen/test-kitchen"
+
+if platform == 'windows'
+  dependency "ruby-windows"
+  dependency "ruby-windows-devkit"
+else
+  dependency "ruby"
+  dependency "rubygems"
+end
 
 build do
-  gem "install chef -n #{install_dir}/embedded/bin --no-rdoc --no-ri -v #{version}"
+  bundle "install --without guard", :env => {"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
+  bundle "exec rake build", :env => {"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
+  gem ["install pkg/test-kitchen-*.gem",
+       "--no-rdoc --no-ri"].join(" "), :env => {"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"}
 end

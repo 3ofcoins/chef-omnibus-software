@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,10 @@
 #
 
 name "keepalived"
-version "1.2.9"
+default_version "1.2.9"
 
 dependency "popt"
+dependency "openssl"
 
 source :url => "http://www.keepalived.org/software/keepalived-1.2.9.tar.gz",
        :md5 => "adfad98a2cc34230867d794ebc633492"

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 #
 
 name "omnibus-ctl"
-version "0.0.7"
+default_version "0.0.7"
 
 dependency "ruby"
 dependency "rubygems"
@@ -30,5 +30,6 @@ build do
   gem "build omnibus-ctl.gemspec"
   gem "install omnibus-ctl-#{version}.gem"
   command "mkdir -p #{install_dir}/embedded/service/omnibus-ctl"
+  command "touch #{install_dir}/embedded/service/omnibus-ctl/.gitkeep"
 end
 

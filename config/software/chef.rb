@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2012 Opscode, Inc.
+# Copyright:: Copyright (c) 2012-2014 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,31 +22,22 @@ dependency "rubygems"
 dependency "yajl"
 dependency "bundler"
 
-version ENV["CHEF_GIT_REV"] || "master"
+default_version "master"
 
 source :git => "git://github.com/opscode/chef"
 
 relative_path "chef"
 
-always_build true
+always_build (self.project.name == "chef")
 
 env =
   case platform
   when "solaris2"
-    if Omnibus.config.solaris_compiler == "studio"
-    {
-      "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
-      "LDFLAGS" => "-R#{install_dir}/embedded/lib -L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include"
-    }
-    elsif Omnibus.config.solaris_compiler == "gcc"
     {
       "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
       "LDFLAGS" => "-R#{install_dir}/embedded/lib -L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include -static-libgcc",
       "LD_OPTIONS" => "-R#{install_dir}/embedded/lib"
     }
-    else
-      raise "Sorry, #{Omnibus.config.solaris_compiler} is not a valid compiler selection."
-    end
   when "aix"
     {
       "LDFLAGS" => "-Wl,-blibpath:#{install_dir}/embedded/lib:/usr/lib:/lib -L#{install_dir}/embedded/lib",
@@ -116,25 +107,47 @@ build do
     end
   end
 
-  # install chef first so that ohai gets installed into /opt/chef/bin/ohai
-  rake "gem", :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
+  # The way we install chef is different between chefdk and chef projects
+  # due to the fact that chefdk project has appbundler enabled.
+  # Two differences are:
+  #   1-) Order of bundle install & rake gem
+  #   2-) "-n #{install_dir}/bin" option for gem install
+  # We don't expect any side effects from (1) other than not creating
+  # link to erubis binary (which is not needed other than ruby 1.8.7 due to
+  # change that switched the template syntax checking to native ruby code.
+  # Not having (2) does not create symlinks for binaries under
+  # #{install_dir}/bin which gets created by appbundler later on.
+  if project.name == "chef"
+    # install chef first so that ohai gets installed into /opt/chef/bin/ohai
+    rake "gem", :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
 
-  command "rm -f pkg/chef-*-x86-mingw32.gem"
+    command "rm -f pkg/chef-*-x86-mingw32.gem"
 
-  gem ["install pkg/chef-*.gem",
+    gem ["install pkg/chef-*.gem",
       "-n #{install_dir}/bin",
       "--no-rdoc --no-ri"].join(" "), :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
 
-  # install the whole bundle, so that we get dev gems (like rspec) and can later test in CI
-  # against all the exact gems that we ship (we will run rspec unbundled in the test phase).
-  bundle "install --without server docgen", :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
+    # install the whole bundle, so that we get dev gems (like rspec) and can later test in CI
+    # against all the exact gems that we ship (we will run rspec unbundled in the test phase).
+    bundle "install --without server docgen", :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
+  else
+    # install the whole bundle first
+    bundle "install --without server docgen", :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
 
-  auxiliary_gems = ["highline", "net-ssh-multi"]
-  auxiliary_gems << "ruby-shadow" unless platform == "mac_os_x" || platform == "freebsd" || platform == "aix"
+    rake "gem", :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
+
+    command "rm -f pkg/chef-*-x86-mingw32.gem"
+
+    # Don't use -n #{install_dir}/bin. Appbundler will take care of them later
+    gem ["install pkg/chef-*.gem",
+      "--no-rdoc --no-ri"].join(" "), :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
+  end
+
+  auxiliary_gems = []
+  auxiliary_gems << "ruby-shadow" unless platform == "aix"
 
   gem ["install",
        auxiliary_gems.join(" "),
-       "-n #{install_dir}/bin",
        "--no-rdoc --no-ri"].join(" "), :env => env.merge({"PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"})
 
   #
