@@ -16,14 +16,22 @@
 #
 
 name "gmp"
-default_version "4.1.3"
+default_version "5.1.3"
 
-source :url => "http://ftp.gnu.org/gnu/gmp/gmp-4.1.3.tar.gz",
-       :md5 => "bdbb9136fa22a0ccf028d0f87aae1dd2"
+source :url => "https://gmplib.org/download/gmp/gmp-#{version}.tar.bz2",
+       :md5 => "a082867cbca5e898371a97bb27b31fea"
 
-relative_path "gmp-4.1.3"
+relative_path "#{name}-#{version}"
+
+configure_env = {
+  "LDFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
+  "CFLAGS" => "-L#{install_dir}/embedded/lib -I#{install_dir}/embedded/include",
+  "PATH" => "#{install_dir}/embedded/bin:#{ENV['PATH']}"
+}
 
 build do
+  patch source: 'gmp-size_t.patch'
+
   configure_command = ["./configure",
                        "--prefix=#{install_dir}/embedded"]
 
@@ -31,7 +39,7 @@ build do
     configure_command << "--with-pic"
   end
 
-  command configure_command.join(" ")
-  command "make -j #{max_build_jobs}"
+  command configure_command.join(" "), env: configure_env
+  command "make -j #{max_build_jobs}", env: configure_env
   command "make install"
 end
