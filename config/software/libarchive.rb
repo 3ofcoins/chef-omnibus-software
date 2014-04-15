@@ -44,7 +44,9 @@ build do
     --disable-bsdtar \
     --disable-bsdcpio \
     --without-lzmadec \
-    --without-openssl", :env => env
+    --without-openssl \
+    --disable-xattr \
+    --disable-acl", :env => env
   command "make", :env => env
   command "make install", :env => env
 end
