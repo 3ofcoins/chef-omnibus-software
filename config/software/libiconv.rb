@@ -29,6 +29,7 @@ relative_path "libiconv-#{version}"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
+  env['CFLAGS'] = "#{env['CFLAGS']} -fPIC"
 
   configure_command = "./configure" \
                       " --prefix=#{install_dir}/embedded"
