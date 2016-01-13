@@ -34,10 +34,12 @@ end
 
 dependency "nokogiri"
 dependency "bundler"
-dependency "dep-selector-libgecode"
+# dependency "dep-selector-libgecode"
+dependency "gecode"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
+  env['USE_SYSTEM_GECODE'] = '1'
 
   bundle "install" \
          " --jobs #{workers}" \
