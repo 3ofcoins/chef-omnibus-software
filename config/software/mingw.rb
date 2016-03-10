@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2014 Chef Software, Inc.
+# Copyright 2012-2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
 # limitations under the License.
 #
 
-name "pip"
-default_version "1.3"
+name "mingw"
+default_version "5.1.0-tdm64-1"
 
-dependency "setuptools"
+dependency "msys-base"
+dependency "msys-coreutils-ext"
+dependency "binutils"
+dependency "mingw-runtime"
 
-source url: "https://pypi.python.org/packages/source/p/pip/pip-#{version}.tar.gz",
-       md5: '918559b784e2aca9559d498050bb86e7'
+source url: "http://iweb.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/#{version}/gcc-#{version}-core.tar.lzma"
 
-relative_path "pip-#{version}"
+version("5.1.0-tdm64-1") { source sha256: "29393aac890847089ad1e93f81a28f6744b1609c00b25afca818f3903e42e4bd" }
 
 build do
-  env = with_standard_compiler_flags(with_embedded_path)
-
-  command "#{install_dir}/embedded/bin/python setup.py install" \
-          " --prefix=#{install_dir}/embedded", env: env
+  copy "*", "#{install_dir}/embedded"
 end

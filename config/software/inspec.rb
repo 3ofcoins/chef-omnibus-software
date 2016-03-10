@@ -17,15 +17,9 @@
 name "inspec"
 default_version "master"
 
-source git: "git://github.com/chef/inspec.git"
+source git: "https://github.com/chef/inspec.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "bundler"
 

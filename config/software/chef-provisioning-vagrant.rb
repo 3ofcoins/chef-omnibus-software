@@ -17,15 +17,9 @@
 name "chef-provisioning-vagrant"
 default_version "master"
 
-source git: "git://github.com/chef/chef-provisioning-vagrant.git"
+source git: "https://github.com/chef/chef-provisioning-vagrant.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "bundler"
 dependency "chef"

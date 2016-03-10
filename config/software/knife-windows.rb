@@ -17,15 +17,9 @@
 name "knife-windows"
 default_version "master"
 
-source git: "https://github.com/chef/knife-windows"
+source git: "https://github.com/chef/knife-windows.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "bundler"
 dependency "chef"

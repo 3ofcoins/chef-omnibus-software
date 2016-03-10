@@ -14,79 +14,37 @@
 # limitations under the License.
 #
 
-#
-# openssl 1.0.0m fixes a security vulnerability:
-#   https://www.openssl.org/news/secadv_20140605.txt
-# Since the rubyinstaller.org doesn't release ruby when a dependency gets
-# patched, we are manually patching the dependency until we get a new
-# ruby release on windows.
-# This component should be removed when we upgrade to the next version of
-# rubyinstaller > 1.9.3-p545 and 2.0.0-p451
-#
-# openssl 1.0.0n fixes more security vulnerabilities...
-#   https://www.openssl.org/news/secadv_20140806.txt
-
-# Ruby 2.0.0 doesn't support openssl 1.0.1 - so we still need to maintain 1.0.0
-# series for those rubies.
-
 name "openssl-windows"
-default_version "1.0.1q"
+# 1.0.1s is binary imcompatible with ruby from rubyinstaller due to an API
+# change removing SSLv2 functions.
+default_version "1.0.1r"
 
 dependency "ruby-windows"
 
 if windows_arch_i386?
-  source url: "http://dl.bintray.com/oneclick/OpenKnapsack/x86/openssl-#{version}-x86-windows.tar.lzma"
-
-  version('1.0.0n') { source md5: "9506530353f3b984680ec27b7270874a" }
-  version('1.0.0q') { source md5: "577dbe528415c6f178a9431fd0554df4" }
-  version('1.0.0r') { source md5: "25402ddce541aa54eb5e114721926e72" }
-else
-  source url: "http://dl.bintray.com/oneclick/OpenKnapsack/x64/openssl-#{version}-x64-windows.tar.lzma"
-
-  version('1.0.0n') { source md5: "8edef798e06c26ec5b936db472fea710" }
-  version('1.0.0q') { source md5: "4aceb496efdae5141c3ac2ffd4d00106" }
-  version('1.0.0r') { source md5: "034440ea3eb3456db660e03f2d12591e" }
-end
-
-if windows_arch_i386?
-  version('1.0.1m') do
-    source url: "https://github.com/jaym/knapsack-recipes/releases/download/openssl-1.0.1m/openssl-1.0.1m-x86-windows.tar.lzma",
-           md5: "789c307a560386a55e14f3e04cd69865"
+  version('1.0.1r') do
+    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1r/openssl-1.0.1r-x86-windows.tar.lzma",
+           md5: "72e2cab647192ddc5314760feca6b424"
   end
-
-  version('1.0.1p') do
-    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1p/openssl-1.0.1p-x86-windows.tar.lzma",
-           md5: "013c0f27c4839c89e33037acc72f17c5"
-  end
-
-  version('1.0.1q') do
-    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1q/openssl-1.0.1q-x86-windows.tar.lzma",
-           md5: "3970fb1323b89c068525d60211670528"
+  version('1.0.1s') do
+    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1s/openssl-1.0.1s-x86-windows.tar.lzma",
+           md5: "971abfe54d89d79b34c7444dcab8e17b"
   end
 else
-  version('1.0.1p') do
-    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1p/openssl-1.0.1p-x64-windows.tar.lzma",
-           md5: "ffdcef3e4fd1eca457a2e9a08cdd5aa1"
+  version('1.0.1r') do
+    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1r/openssl-1.0.1r-x64-windows.tar.lzma",
+           md5: "d1aa3c43f21eaf42abf321cbfd9de331"
   end
-
-  version('1.0.1q') do
-    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1q/openssl-1.0.1q-x64-windows.tar.lzma",
-           md5: "c9a05a9dfed1b91674ccfbb0b9e731c9"
+  version('1.0.1s') do
+    source url: "https://github.com/jaym/windows-openssl-build/releases/download/openssl-1.0.1s/openssl-1.0.1s-x64-windows.tar.lzma",
+           md5: "0a8d444d22ab43ecf8ae29ec8d31fa1b"
   end
 end
 
 relative_path 'bin'
 
 build do
-  # Make sure the OpenSSL version is suitable for our path:
-  # OpenSSL version is something like
-  # OpenSSL 1.0.0k 5 Feb 2013
-  ruby "-e \"require 'openssl'; puts 'OpenSSL patch version check expecting <= #{version}'; puts 'Current version : ' + OpenSSL::OPENSSL_VERSION; exit(1) if OpenSSL::OPENSSL_VERSION.split(' ')[1] >= '#{version}'\""
-
   # Copy over the required dlls into embedded/bin
   copy "libeay32.dll", "#{install_dir}/embedded/bin/"
   copy "ssleay32.dll", "#{install_dir}/embedded/bin/"
-
-  # Also copy over the openssl executable for debugging
-  copy "bin/openssl.exe", "#{install_dir}/embedded/bin/"
 end

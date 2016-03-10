@@ -17,15 +17,9 @@
 name "knife-spork"
 default_version "master"
 
-source git: "https://github.com/jonlives/knife-spork"
+source git: "https://github.com/jonlives/knife-spork.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "bundler"
 dependency "chef"

@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2014 Chef Software, Inc.
+# Copyright 2012-2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
 # limitations under the License.
 #
 
-name "sphinx"
-default_version "1.1.3"
+name "binutils"
+default_version "2.25-tdm64-1"
 
-dependency "pip"
-dependency "pygments"
+dependency "msys-base"
+
+source url: "http://iweb.dl.sourceforge.net/project/tdm-gcc/GNU%20binutils/binutils-#{version}.tar.lzma"
+version("2.25-tdm64-1") { source sha256: "4722bb7b4d46cef714234109e25e5d1cfd29f4e53365b6d615c8a00735f60e40" }
 
 build do
-  env = with_standard_compiler_flags(with_embedded_path)
-
-  command "#{install_dir}/embedded/bin/pip install" \
-          " -I" \
-          " --build #{project_dir} #{name}==#{version}", env: env
+  copy "*", "#{install_dir}/embedded"
 end

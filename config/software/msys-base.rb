@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2014 Chef Software, Inc.
+# Copyright 2012-2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,26 +14,14 @@
 # limitations under the License.
 #
 
-name "libjpeg"
-default_version "8d"
+name "msys-base"
+default_version "2013072300"
 
-source url: "http://www.ijg.org/files/jpegsrc.v8d.tar.gz",
-       md5: "52654eb3b2e60c35731ea8fc87f1bd29"
+dependency "mingw-get"
 
-relative_path "jpeg-8d"
+env = with_standard_compiler_flags(with_embedded_path)
 
 build do
-  env = with_standard_compiler_flags(with_embedded_path)
-
-  command "./configure" \
-          " --prefix=#{install_dir}/embedded" \
-          " --enable-shared " \
-          " --enable-static", env: env
-
-  mkdir "#{install_dir}/embedded/man/man1"
-
-  make "-j #{workers}", env: env
-  make "install", env: env
-
-  delete "#{install_dir}/embedded/man"
+  command "mingw-get.exe -v install msys-base=#{version}-msys-bin.meta",
+          env: env, cwd: "#{install_dir}/embedded"
 end

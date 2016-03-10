@@ -30,15 +30,24 @@ source url: "ftp://xmlsoft.org/libxml2/libxml2-#{version}.tar.gz"
 relative_path "libxml2-#{version}"
 
 build do
-  env = with_standard_compiler_flags(with_embedded_path)
+  env = with_standard_compiler_flags(with_embedded_path({}, msys: true), bfd_flags: true)
 
-  command "./configure" \
-          " --prefix=#{install_dir}/embedded" \
-          " --with-zlib=#{install_dir}/embedded" \
-          " --with-iconv=#{install_dir}/embedded" \
-          " --without-python" \
-          " --without-icu", env: env
+  configure_command = [
+    "--with-zlib=#{install_dir}/embedded",
+    "--with-iconv=#{install_dir}/embedded",
+    "--without-python",
+    "--without-icu",
+  ]
 
-  make "-j #{workers}", env: env
+  # solaris 10 ipv6 support is broken due to no inet_ntop() in -lnsl
+  configure_command << "--enable-ipv6=no" if solaris2?
+
+  configure(*configure_command, env: env)
+
+  if windows?
+    make env: env
+  else
+    make "-j #{workers}", env: env
+  end
   make "install", env: env
 end

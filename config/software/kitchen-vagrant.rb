@@ -17,15 +17,9 @@
 name "kitchen-vagrant"
 default_version "master"
 
-source git: "git://github.com/test-kitchen/kitchen-vagrant.git"
+source git: "https://github.com/test-kitchen/kitchen-vagrant.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "bundler"
 dependency "test-kitchen"

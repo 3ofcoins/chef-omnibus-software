@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2014 Chef Software, Inc.
+# Copyright 2012-2016 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,20 +15,40 @@
 #
 
 name "openresty"
-default_version "1.9.3.1"
+default_version "1.9.7.2"
 
 dependency "pcre"
 dependency "openssl"
 dependency "zlib"
 
-version("1.9.3.1") { source md5: "cde1f7127f6ba413ee257003e49d6d0a" }
-version("1.7.10.2") { source md5: "bca1744196acfb9e986f1fdbee92641e" }
-version("1.7.10.1") { source md5: "1093b89459922634a818e05f80c1e18a" }
-version("1.4.3.6") { source md5: "5e5359ae3f1b8db4046b358d84fabbc8" }
+source_package_name = "openresty"
 
-source url: "http://openresty.org/download/ngx_openresty-#{version}.tar.gz"
+version("1.9.7.3") { source md5: "33579b96a8c22bedee97eadfc99d9564" }
 
-relative_path "ngx_openresty-#{version}"
+version("1.9.7.2") do
+  source md5: "78a263de11ff43c95e847f208cce0899"
+  source_package_name = "ngx_openresty"
+end
+version("1.9.3.1") do
+  source md5: "cde1f7127f6ba413ee257003e49d6d0a"
+  source_package_name = "ngx_openresty"
+end
+version("1.7.10.2") do
+  source md5: "bca1744196acfb9e986f1fdbee92641e"
+  source_package_name = "ngx_openresty"
+end
+version("1.7.10.1") do
+  source md5: "1093b89459922634a818e05f80c1e18a"
+  source_package_name = "ngx_openresty"
+end
+version("1.4.3.6") do
+  source md5: "5e5359ae3f1b8db4046b358d84fabbc8"
+  source_package_name = "ngx_openresty"
+end
+
+source url: "https://openresty.org/download/#{source_package_name}-#{version}.tar.gz"
+
+relative_path "#{source_package_name}-#{version}"
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
@@ -77,5 +97,5 @@ build do
   make "-j #{workers}", env: env
   make "install", env: env
 
-  touch "/opt/opscode/embedded/nginx/logs/.gitkeep"
+  touch "#{install_dir}/embedded/nginx/logs/.gitkeep"
 end

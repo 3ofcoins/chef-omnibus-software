@@ -17,15 +17,9 @@
 name "winrm-transport"
 default_version "master"
 
-source git: "https://github.com/test-kitchen/winrm-transport"
+source git: "https://github.com/test-kitchen/winrm-transport.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "bundler"
 

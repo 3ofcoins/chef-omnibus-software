@@ -18,15 +18,9 @@ name "ffi-yajl"
 default_version "master"
 relative_path "ffi-yajl"
 
-source git: "git://github.com/opscode/ffi-yajl"
+source git: "https://github.com/opscode/ffi-yajl.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "libffi"
-  dependency "ruby"
-end
+dependency "ruby"
 
 dependency "rubygems"
 dependency "libyajl2-gem"

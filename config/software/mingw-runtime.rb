@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2014 Chef Software, Inc.
+# Copyright 2012-2015 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,23 +14,15 @@
 # limitations under the License.
 #
 
-name "spawn-fcgi"
-default_version "1.6.3"
+name "mingw-runtime"
+default_version "v4-git20150618-gcc5-tdm64-1"
 
-dependency "fcgi"
-dependency "fcgiwrap"
+dependency "msys-base"
 
-source url: "http://www.lighttpd.net/download/spawn-fcgi-#{version}.tar.gz",
-       md5: "6d75f9e9435056fa1e574d836d823cd0"
+source url: "http://iweb.dl.sourceforge.net/project/tdm-gcc/MinGW-w64%20runtime/GCC%205%20series/mingw64runtime-#{version}.tar.lzma"
 
-relative_path "spawn-fcgi-#{version}"
+version("v4-git20150618-gcc5-tdm64-1") { source sha256: "29186e0bb36824b10026d78bdcf238d631d8fc1d90718d2ebbd9ec239b6f94dd" }
 
 build do
-  env = with_standard_compiler_flags(with_embedded_path)
-
-  command "./configure" \
-          " --prefix=#{install_dir}/embedded", env: env
-
-  make "-j #{workers}", env: env
-  make "install", env: env
+  copy "*", "#{install_dir}/embedded"
 end

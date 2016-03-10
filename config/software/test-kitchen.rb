@@ -18,15 +18,9 @@ name "test-kitchen"
 default_version "master"
 relative_path "test-kitchen"
 
-source git: "git://github.com/test-kitchen/test-kitchen"
+source git: "https://github.com/test-kitchen/test-kitchen.git"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-else
-  dependency "ruby"
-end
-
+dependency "ruby"
 dependency "rubygems"
 dependency "nokogiri"
 

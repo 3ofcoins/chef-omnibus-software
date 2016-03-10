@@ -17,18 +17,14 @@
 name "berkshelf"
 default_version "master"
 
-source git: "git://github.com/berkshelf/berkshelf"
+source git: "https://github.com/berkshelf/berkshelf.git"
 
 relative_path "berkshelf"
 
-if windows?
-  dependency "ruby-windows"
-  dependency "ruby-windows-devkit"
-  dependency "rubygems"
-else
-  dependency "libffi"
-  dependency "ruby"
-  dependency "rubygems"
+dependency "ruby"
+dependency "rubygems"
+
+unless windows? && (project.overrides[:ruby].nil? || project.overrides[:ruby][:version] == "ruby-windows")
   dependency "libarchive"
 end
 

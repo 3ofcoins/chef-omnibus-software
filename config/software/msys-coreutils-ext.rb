@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2014 Chef Software, Inc.
+# Copyright 2012-2016 Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,15 +14,19 @@
 # limitations under the License.
 #
 
-name "pygments"
-default_version "1.6"
+name "msys-coreutils-ext"
+default_version "5.97-3"
 
-dependency "pip"
+dependency "mingw-get"
+dependency "msys-base"
+
+# This package brings in occasionally used utilities such as dd, chown, chgrp,
+# hostname, mkfifo, stat etc. Some of these don't make sense on windows but
+# Makefiles like them.
 
 build do
   env = with_standard_compiler_flags(with_embedded_path)
 
-  command "#{install_dir}/embedded/bin/pip install" \
-          " -I" \
-          " --build #{project_dir} #{name}==#{version}", env: env
+  command "mingw-get.exe -v install msys-coreutils-ext=#{version}-*",
+          env: env, cwd: "#{install_dir}/embedded"
 end
