@@ -39,7 +39,7 @@ build do
   # The patch is from the FreeBSD ports tree and is for GCC compatibility.
   # http://svnweb.freebsd.org/ports/head/devel/libedit/files/patch-vi.c?annotate=300896
   if version.to_i < 20150325 && (freebsd? || openbsd?)
-    patch source: "freebsd-vi-fix.patch", env: env
+    patch source: "freebsd-vi-fix-v#{version}.patch", env: env
   end
 
   if openbsd?
