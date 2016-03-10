@@ -46,7 +46,7 @@ build do
     env["CXX"] = "g++44"
   end
 
-  command "./configure" \
+  command "bash ./configure" \
           " --prefix=#{install_dir}/embedded" \
           " --disable-doc-dot" \
           " --disable-doc-search" \
